@@ -1,0 +1,378 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <title>Gaming Adda</title>
+         <meta name="viewport" content="width=device-width, initial-scale=1">
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+<style>
+    body{
+        margin: 0;
+        
+    }
+    .heading
+    {
+        background-color:   #6dd3d2;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 20px;
+        height: auto;
+        width: available;
+        color: white;
+        padding-top: 20px;
+        padding-bottom: 30px;
+    }
+    .player-profile{
+        border:  solid;
+        border-top-color: #8ce9de;
+        border-left-color: #8ce9de;
+        border-right-color: #8ce9de;
+        border-bottom-color:   #8ce9de;
+        width: available;
+        height: auto;
+        padding-bottom: 10px;
+        padding-top: 10px;
+    }
+    .content{
+        margin-top: 20px;
+        align-self: center;
+    }
+    .status{
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+</style>
+<script type="text/javascript">
+   
+    $(document).ready(function(){
+   $("#cat").val("Player");
+            
+        $("#player").click(function(){
+            $("#countryId").attr("required",true);
+             $("#stateId").attr("required",true);
+             $("#cityId").attr("required",true);
+             $("#address").attr("required", true);
+             $("#player").addClass("btn-primary");
+            $("#officer").removeClass("btn-primary");
+            $("#officer").addClass("btn-default");
+            if($("#login").hasClass("active"))
+            {
+            $("#title").text("Player Login Portal");
+            }
+            else
+                $("#title").text("Player Registration Portal");
+            
+            $("#player-special").show();
+            
+            $(".status").removeClass("alert-danger alert-success");
+            $(".status").addClass("alert-info");
+            $("#login-status-msg").html("<span class='glyphicon glyphicon-repeat login-status'></span>&nbsp;&nbsp;&nbsp;&nbsp;Authenticating User.. Please wait...");
+            $(".status").hide();
+        });
+        $("#officer").click(function(){
+            $("#countryId").removeAttr("required");
+             $("#stateId").removeAttr("required");
+             $("#cityId").removeAttr("required");
+             $("#address").removeAttr("required");
+            $("#cat").val("Officer");
+            $("#player").removeClass("btn-primary");
+            $("#officer").addClass("btn-primary");
+            $("#player").addClass("btn-default");
+             
+             if($("#login").hasClass("active"))
+            {
+                $("#title").text("Officer Login Portal");
+            }
+            else
+                $("#title").text("Officer Registration Portal");
+            
+            $("#player-special").hide();
+            $(".status").removeClass("alert-danger alert-success");
+            $(".status").addClass("alert-info");
+            $("#login-status-msg").html("<span class='glyphicon glyphicon-repeat login-status'></span>&nbsp;&nbsp;&nbsp;&nbsp;Authenticating User.. Please wait...");
+            $(".status").hide();
+        });
+        
+        $(".loginbtn").click(function(){
+            $(".status").removeClass("alert-danger alert-success");
+            $(".status").addClass("alert-info");
+            $("#login-status-msg").html("<span class='glyphicon glyphicon-repeat login-status'></span>&nbsp;&nbsp;&nbsp;&nbsp;Authenticating User.. Please wait...");
+            
+            $(".status").show();
+           setTimeout(function(){
+               
+               $.ajax({
+			url : 'checkUser.jsp',
+                        data : {
+				email : $("#email").val(),
+                                pass : $("#pwd").val(),
+                                cat :  $("#cat").val()
+			},success : function(responseText) {
+                            //alert(responseText);
+                            var res = $.trim(responseText);
+                            if(res==="not found")
+                            {
+                                $(".status").removeClass("alert-info alert-success");
+                                $(".status").addClass("alert-danger");
+                                $("#login-status-msg").html("<span class='glyphicon glyphicon-remove-circle login-status'></span>&nbsp;&nbsp;&nbsp;&nbsp;Authentication Failed!!!");
+                                
+                            }
+                            else
+                            {
+                                $(".status").removeClass("alert-info alert-danger");
+                                $(".status").addClass("alert-success");
+                                $("#login-status-msg").html("<span class='glyphicon glyphicon-ok-sign login-status'></span>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Authentication Success</strong> Redirecting...");
+                                $("#uid").val(res); 
+                                setTimeout(function(){
+           
+                                     $("#loginform").submit();
+                                 },1000);     
+                                 
+          
+                            }
+                                
+			}
+		});
+        
+               
+           },1000);
+           
+            
+            
+        });
+        
+        $("#login").click(function(){
+            $("#cat").val("Player");
+            
+            if($("#player").hasClass("btn-primary"))
+            {
+                $("#title").text("Player Login Portal");
+            }
+            else
+            {
+                $("#title").text("Officer Login Portal");
+            }
+        });
+        $("#register").click(function(){
+            if($("#player").hasClass("btn-primary"))
+            {
+                $("#title").text("Player Registration Portal");
+                $("#cat").val("Player");
+            }
+            else
+            {
+                $("#title").text("Officer Registration Portal");
+                $("#cat").val("Officer");
+            }
+            $(".status").removeClass("alert-danger alert-success");
+            $(".status").addClass("alert-primary");
+            $("#login-status-msg").html("<span class='glyphicon glyphicon-repeat login-status'></span>&nbsp;&nbsp;&nbsp;&nbsp;Authenticating User.. Please wait...");
+            $(".status").hide();
+        });
+        $("#countryId").change(function(){
+                $.ajax({
+			url : 'getState.jsp',
+                        data : {
+				ccode : $("#countryId").val()
+			},success : function(responseText) {
+                            //alert(responseText+country_id);
+				$('#stateId').html(responseText);
+			}
+		});
+            
+        });
+        $("#stateId").change(function(){
+                $.ajax({
+			url : 'getCity.jsp',
+                        data : {
+				scode : $("#stateId").val()
+			},success : function(responseText) {
+                            //alert(responseText+country_id);
+				$('#cityId').html(responseText);
+			}
+		});
+            
+        });
+        
+        
+        	$("#registerform").on('submit',(function(e){
+            e.preventDefault();
+           
+           $.ajax({
+			url : 'Registration.jsp',
+                        data : {
+                                cat : $("#cat").val(),                            
+                                fname : $("#fname").val(),
+                                lname : $("#lname").val(),
+                                email : $("#emailid").val(),
+                                age : $("#age").val(),
+                                pass : $("#pass").val(),
+                                number : $("#number").val(),
+                                country : $("#countryId").val(),
+				state : $("#stateId").val(),
+                                city : $("#cityId").val(),
+                                address : $("#address").val()
+                                
+			},success : function(responseText) {
+                            //alert(responseText);
+                            alert(responseText);
+			}
+		});
+        
+           
+        }));
+	
+
+        
+        
+       $.ajax({
+			url : 'getCountry.jsp',
+			
+			success : function(responseText) {
+                            //alert(responseText);
+				$('#countryId').html(responseText);
+			}
+		});
+                
+                
+                
+                
+    });
+     function ValidateFName(txt) {
+    txt.value = txt.value.replace(/[^a-zA-Z- '\n\r.]+/g, '');
+    document.getElementById("fchkname").style.borderColor="green";   
+    
+}
+    function isNumber(evt,num) {
+        
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    var str = num + String.fromCharCode(charCode);
+    
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    else
+    return true;
+    } 
+</script>
+</head>
+<body>
+    <div class="container">
+            <div class="heading text-center">
+                <h1><b>The Gaming Adda</b></h1>
+                <h5><b>The ultimate gaming destination :)</b></h5>
+                
+            </div>
+        <div class="player-profile ">
+            <div class="text-center">
+                <button type="button" class="btn btn-primary" id="player">I'm a Player</button>
+            <button type="button" class="btn btn-default" id="officer">I'm an Officer</button>
+                
+            </div>
+                <div class="row content">
+            <div class="col-sm-8 col-sm-offset-2">
+                <div class='well'>
+                <ul class="nav nav-tabs">
+                    <li class="active" id="login"><a  data-toggle="tab" href="#login-player">Login</a></li>
+                    <li id="register"><a data-toggle="tab" href="#register-player">Register</a></li>
+  
+</ul>
+                    <center><h2 id="title">Player Login Portal</h2></center>
+                    <div class="status alert alert-info" style="display:none;"><center> <div id="login-status-msg"><span class="glyphicon glyphicon-repeat login-status"></span>&nbsp;&nbsp;&nbsp;&nbsp;Authenticating User.. Please wait...</div></center></div>
+                    <div class="tab-content">
+                            <div id="login-player" class="tab-pane fade in active">
+                             
+  <div class="form-group ">
+    <label for="email">Email address:</label>
+    <input type="email" class="form-control" placeholder="Enter Email id here" id="email">
+  </div>
+  <div class="form-group">
+    <label for="pwd">Password:</label>
+    <input type="password" class="form-control" placeholder="Enter password here" id="pwd">
+  </div>
+                                 <center><button type="submit" class="btn btn-info loginbtn">Login</button></center>
+                       
+                </div>
+                            <div id="register-player" class="tab-pane fade">
+                                <form method="post" id="registerform">
+                                    <input type="hidden" name="category" id="cat"/>
+  <div class="form-group ">
+    <label for="first-name">First Name:</label>
+    <input type="text" onkeyup="ValidateFName(this)" class="form-control" placeholder="Enter First Name here" id="fname" name="fname" required>
+  </div>
+  <div class="form-group ">
+    <label for="last-name">Last Name:</label>
+    <input type="text"  onkeyup="ValidateFName(this)" class="form-control" placeholder="Enter Last Name here" id="lname" name="lname" required>
+  </div>
+  <div class="form-group ">
+    <label for="email">Email address:</label>
+    <input type="email" class="form-control" placeholder="Enter Email id here" id="emailid" required>
+   
+  </div>
+  <div class="form-group">
+    <label for="pwd">Password:</label>
+    <input type="password" class="form-control" placeholder="Enter password here" id="pass" required>
+  </div>
+  <div class="form-group ">
+    <label for="age">Age:</label>
+    <input type="text" class="form-control" onkeypress='return isNumber(event,this.value)' placeholder="Enter Age here" id="age" required>
+  </div>
+  <div class="form-group ">
+    <label for="phone">Mobile Number:</label>
+    <input type="text" class="form-control" onkeypress='return isNumber(event,this.value)' placeholder="Enter Mobile Number here" id="number" required>
+  </div>
+                                 
+                                 <div id="player-special" >
+                                  <div class="form-group">
+                                      <label for="Address">Select Country:</label>
+  
+        <select name="country" class="form-control countries" id="countryId" required="required">
+<option value="Select Country">Select Country</option>
+</select>
+    </div>
+ <div class="form-group"> 
+     <label for="Address">Select State:</label>
+  
+        <select name="state" class="form-control states" id="stateId" required="required">
+<option value="">Select State</option>
+</select>
+ 
+</div>
+ <div class="form-group"> 
+   <label for="Address">Select City:</label>
+  
+        <select name="city" class="form-control cities" id="cityId" required="required">
+<option value="">Select City</option>
+</select>
+ </div>
+<div class="form-group ">
+    <label for="Address">Enter Street Address:</label>
+    <textarea required type="text" class="form-control" placeholder="Enter Address here" id="address" height="3"></textarea>
+  </div>
+     
+                                 </div>
+                                  
+                                 
+                                 
+                                <center> <input type="submit" value="Register" class="btn btn-info"></center>
+</form>
+                             
+                    
+                </div>
+                    </div>
+                        
+            </div>
+        </div>
+    </div>
+        </div>
+        
+    
+    </div>
+    <form action="Redirect.jsp" id="loginform" method="post"><input type="hidden" name="id" id="uid" value=""/></form>
+</body>
+</html>
